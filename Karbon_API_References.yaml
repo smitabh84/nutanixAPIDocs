@@ -2,7 +2,8 @@ swagger: '2.0'
 info:
   title: Karbon
   contact:
-    name: Karbon Developers
+    name: Karbon Developers Test
+
     email: karbon-team@nutanix.com
   license:
     name: Copyright Nutanix Inc. All rights reserved
