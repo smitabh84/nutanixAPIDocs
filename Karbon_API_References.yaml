@@ -1,0 +1,1010 @@
+swagger: "2.0"
+info:
+  title: Karbon
+  contact:
+    name: Karbon Developers
+    email: karbon-team@nutanix.com
+  license:
+    name: Copyright Nutanix Inc. All rights reserved
+  version: v1.0.0
+paths:
+  /karbon/v1-alpha.1/k8s/clusters/storage-auth:
+    put:
+      description: |-
+        Updates the k8s secret and docker volume plugin password across k8s clusters deployed in Karbon. The update operation is performed only for the clusters where the provided prism element UUID and the username match.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1-alpha.1/k8s/clusters/storage-auth
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Updates the k8s secret and docker volume plugin password across k8s
+        clusters deployed in Karbon.
+      operationId: PutK8sClusterStorageAuth
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/storage_auth_input'
+      responses:
+        "202":
+          description: Storage authentication update request accepted
+          schema:
+            $ref: '#/definitions/storage_auth_response'
+        "400":
+          description: Bad parameters specified in request
+          schema:
+            $ref: '#/definitions/error_response'
+        "401":
+          description: Invalid client credentials
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1-alpha.1/k8s/clusters/{name}/tasks/{task-uuid}:
+    get:
+      description: |-
+        Get task details associated with the k8s cluster.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1-alpha.1/k8s/clusters/cluster01/tasks/18887d47-6144-42b5-8d7f-7033b8a33704
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get task details associated with the k8s cluster.
+      operationId: GetK8sClusterTask
+      parameters:
+      - type: string
+        description: The k8s cluster name.
+        name: name
+        in: path
+        required: true
+      - pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+        type: string
+        description: The task UUID.
+        name: task-uuid
+        in: path
+        required: true
+      responses:
+        "200":
+          description: Successfully retrieved the task
+          schema:
+            $ref: '#/definitions/task'
+        "400":
+          description: Invalid k8s cluster name specified
+          schema:
+            $ref: '#/definitions/error_response'
+        "401":
+          description: Invalid client credentials
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster was not found
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1-alpha.1/version:
+    get:
+      description: |-
+        Get the Karbon controller version of the k8 cluster.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1-alpha.1/version
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Meta
+      summary: Get the Karbon controller version of the k8 cluster.
+      operationId: GetVersion
+      responses:
+        "200":
+          description: Successfully retrieved the Karbon controller version.
+          schema:
+            $ref: '#/definitions/karbon_version_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1-beta.1/k8s/clusters:
+    get:
+      description: |-
+        Get all the k8s cluster objects, which include worker, etcd and master configuration details.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1-beta.1/k8s/clusters
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: List all of the k8s clusters.
+      operationId: K8sClusterList
+      responses:
+        "200":
+          description: K8s cluster list request is successful.
+          schema:
+            $ref: '#/definitions/k8s_cluster_list'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1-beta.1/k8s/clusters/{name}/node-pools/{node-pool-name}:
+    get:
+      description: |-
+        Get the node pool configuration.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1-beta.1/k8s/clusters/cluster01/node-pools/worker-node-pool-1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get the node pool configuration.
+      operationId: GetK8sClusterNodePool
+      parameters:
+      - type: string
+        description: K8s cluster name.
+        name: name
+        in: path
+        required: true
+      - type: string
+        description: Node pool name.
+        name: node-pool-name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: Successfully retrieved the node pool configuration.
+          schema:
+            $ref: '#/definitions/node_pool'
+        "400":
+          description: Invalid k8s cluster name specified.
+          schema:
+            $ref: '#/definitions/error_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster or the node pool was not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1/k8s/clusters:
+    post:
+      description: Creates a k8s cluster with the provided configuration.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Create a new k8s cluster.
+      operationId: CreateK8sCluster
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/k8s_cluster_config'
+      responses:
+        "202":
+          description: K8s cluster creation accepted.
+          schema:
+            $ref: '#/definitions/k8s_cluster_create_response'
+        "400":
+          description: Bad parameters specified in request.
+          schema:
+            $ref: '#/definitions/error_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: Invalid reference supplied.
+          schema:
+            $ref: '#/definitions/error_response'
+        "409":
+          description: K8s cluster name is not unique.
+          schema:
+            $ref: '#/definitions/error_response'
+        "412":
+          description: K8s cluster pre-deployment checks failed.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1/k8s/clusters/{name}:
+    get:
+      description: |-
+        Get the k8s cluster details, which includes worker, etcd, and master configuration details.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1/k8s/clusters/cluster01
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get the k8s cluster details.
+      operationId: GetK8sClusterName
+      parameters:
+      - type: string
+        description: K8s cluster name.
+        name: name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: K8s cluster get request is successful.
+          schema:
+            $ref: '#/definitions/k8s_cluster'
+        "400":
+          description: Invalid k8s cluster name specified.
+          schema:
+            $ref: '#/definitions/error_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster was not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+    delete:
+      description: Delete the k8s cluster.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Delete the k8s cluster.
+      operationId: DeleteK8sClusterName
+      parameters:
+      - pattern: ^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]))*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$
+        type: string
+        description: K8s cluster name.
+        name: name
+        in: path
+        required: true
+      - type: boolean
+        default: false
+        description: Determines whether Karbon allows cluster deletion during cluster
+          deployment.
+        name: skip-prechecks
+        in: query
+      responses:
+        "202":
+          description: K8s cluster delete operation was accepted.
+          schema:
+            $ref: '#/definitions/k8s_cluster_delete_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster was not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        "412":
+          description: The operation failed due to the current state of the k8s cluster.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1/k8s/clusters/{name}/health:
+    get:
+      description: |-
+        Get health status of the k8s cluster.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1/k8s/clusters/cluster01/health
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get health status of the k8s cluster.
+      operationId: GetK8sClusterHealth
+      parameters:
+      - maxLength: 40
+        minLength: 1
+        pattern: ^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]))*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$
+        type: string
+        description: Name of the K8s cluster.
+        name: name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: Health status of the K8s cluster.
+          schema:
+            $ref: '#/definitions/cluster_health_response'
+        "401":
+          description: Invalid platform client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster of the specified name not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        "412":
+          description: K8s cluster not ready for health querying.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1/k8s/clusters/{name}/kubeconfig:
+    get:
+      description: |-
+        Get the kubeconfig to access the K8s cluster.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1/k8s/clusters/cluster01/kubeconfig
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get the kubeconfig to access the k8s cluster.
+      operationId: GetK8sClusterKubeconfig
+      parameters:
+      - maxLength: 40
+        minLength: 1
+        pattern: ^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]))*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$
+        type: string
+        description: Name of the K8s cluster.
+        name: name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: Kubeconfig of the K8s cluster in yaml format.
+          schema:
+            $ref: '#/definitions/cluster_kubeconfig_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster of the specified name not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/error_response'
+  /karbon/v1/k8s/clusters/{name}/ssh:
+    get:
+      description: |-
+        Get SSH credentials to remotely access nodes belonging to the k8s cluster. The credentials have an expiry time of 24 hours.
+
+         **API format**- https://server.nutanix.com:9440/karbon/v1/k8s/clusters/cluster01/ssh
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      tags:
+      - Cluster
+      summary: Get SSH credentials to remotely access nodes belonging to the k8s cluster.
+      operationId: GetK8sClusterSSHAccess
+      parameters:
+      - maxLength: 40
+        minLength: 1
+        pattern: ^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]))*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$
+        type: string
+        description: Name of the K8s cluster.
+        name: name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: SSH credentials to remotely access nodes in the k8s cluster.
+          schema:
+            $ref: '#/definitions/cluster_ssh_access_response'
+        "401":
+          description: Invalid client credentials.
+          schema:
+            $ref: '#/definitions/error_response'
+        "404":
+          description: K8s cluster of the specified name was not found.
+          schema:
+            $ref: '#/definitions/error_response'
+        default:
+          description: Internal error
+          schema:
+            $ref: '#/definitions/error_response'
+definitions:
+  active_passive_config:
+    description: The active passive mode uses the Virtual Router Redundancy Protocol
+      (VRRP) protocol to provide high availability of the master.
+    type: object
+    required:
+    - external_ipv4_address
+    properties:
+      external_ipv4_address:
+        description: External IPV4 address used to access the master node in multi-master
+          deployments.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$
+  ahv_config:
+    type: object
+    required:
+    - cpu
+    - memory_mib
+    - disk_mib
+    properties:
+      cpu:
+        description: The number of VCPUs allocated for each VM on the PE cluster.
+        type: integer
+        minimum: 1
+        example: 2
+      disk_mib:
+        description: Size of local storage for each VM on the PE cluster in MiB.
+        type: integer
+        minimum: 40960
+        example: 40960
+      memory_mib:
+        description: Memory allocated for each VM on the PE cluster in MiB.
+        type: integer
+        minimum: 4096
+        example: 8192
+      network_uuid:
+        description: The UUID of the network for the VMs deployed with this resource
+          configuration.
+        type: string
+        pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+      prism_element_cluster_uuid:
+        description: The unique universal identifier (UUID) of the Prism Element cluster
+          used to deploy VMs for this node pool.
+        type: string
+        pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+  calico_config:
+    description: Configuration of the calico CNI provider
+    type: object
+    properties:
+      ip_pool_configs:
+        type: array
+        items:
+          $ref: '#/definitions/ip_pool_config'
+  cluster_health_response:
+    type: object
+    required:
+    - status
+    properties:
+      messages:
+        description: Details of individual components if the K8s cluster is unhealthy.
+        type: array
+        items:
+          type: string
+      status:
+        description: Health status of the K8s cluster.
+        type: boolean
+  cluster_kubeconfig_response:
+    type: object
+    properties:
+      kube_config:
+        description: Kubeconfig of the K8s cluster in yaml format.
+        type: string
+  cluster_ssh_access_response:
+    type: object
+    properties:
+      certificate:
+        description: Certificate of the user for SSH access.
+        type: string
+      expiry_time:
+        description: Timestamp of certificate expiry in the ISO 8601 format (YYYY-MM-DDThh:mm:ss.sssZ).
+        type: string
+        format: date-time
+        example: "2017-07-21T17:32:28.000Z"
+      private_key:
+        description: The private key of the user for SSH access.
+        type: string
+      username:
+        description: The username for which credentials are returned.
+        type: string
+  cni_config:
+    description: K8s cluster networking configuration. The flannel or the calico configuration
+      needs to be provided.
+    type: object
+    default:
+      node_cidr_mask_size: 24
+      pod_ipv4_cidr: 172.20.0.0/16
+      service_ipv4_cidr: 172.19.0.0/16
+    properties:
+      calico_config:
+        $ref: '#/definitions/calico_config'
+      flannel_config:
+        $ref: '#/definitions/flannel_config'
+      node_cidr_mask_size:
+        description: The size of the subnet from the pod_ipv4_cidr assigned to each
+          host. A value of 24 would allow up to 255 pods per node.
+        type: integer
+      pod_ipv4_cidr:
+        description: CIDR for pods in the cluster.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$
+      service_ipv4_cidr:
+        description: Classless inter-domain routing (CIDR) for k8s services in the
+          cluster.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$
+  error_response:
+    type: object
+    properties:
+      message_info:
+        description: '{} with the key as the error type and the value as the error
+          message'
+        type: object
+  etcd:
+    description: Etcd configuration information.
+    type: object
+    required:
+    - node_pools
+    properties:
+      node_pools:
+        description: names of node pools used for etcd nodes.
+        type: array
+        items:
+          type: string
+  etcd_config:
+    description: Configuration of the etcd cluster.
+    type: object
+    required:
+    - node_pools
+    properties:
+      node_pools:
+        description: Configuration of the node pools that the nodes in the etcd cluster
+          belong to.
+        type: array
+        items:
+          $ref: '#/definitions/node_pool_config'
+  external_lb_config:
+    description: The external load balancer configuration in the case of a multi-master-external-load-balancer
+      type master deployment.
+    type: object
+    required:
+    - external_ipv4_address
+    - master_nodes_config
+    properties:
+      external_ipv4_address:
+        description: The external load balancer IPV4 address.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$
+      master_nodes_config:
+        description: The configuration of the master nodes.
+        type: array
+        items:
+          $ref: '#/definitions/master_node_config'
+  flannel_config:
+    description: Configuration of the flannel container network interface (CNI) provider.
+    type: object
+    example: {}
+  ip_pool_config:
+    description: List of IP pools to be configured/managed by calico.
+    type: object
+    required:
+    - cidr
+    properties:
+      cidr:
+        description: IP range to use for this pool, it should fall within pod cidr.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$
+        example: 172.20.0.0/16
+  k8s_cluster:
+    description: K8s cluster details.
+    type: object
+    required:
+    - name
+    - version
+    - kubeapi_server_ipv4_address
+    - master_config
+    - etcd_config
+    properties:
+      etcd_config:
+        $ref: '#/definitions/etcd'
+      kubeapi_server_ipv4_address:
+        description: IPV4 address of the API server.
+        type: string
+        pattern: ^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$
+      master_config:
+        $ref: '#/definitions/masters'
+      name:
+        description: K8s cluster name.
+        type: string
+        maxLength: 40
+        minLength: 1
+        pattern: ^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]))*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$
+      status:
+        description: K8s cluster status.
+        type: string
+      uuid:
+        description: The universally unique identifier (UUID) of the k8s cluster.
+        type: string
+        pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+      version:
+        description: K8s version of the cluster.
+        type: string
+        minLength: 3
+        pattern: ^v?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        example: 1.16.8-1
+      worker_config:
+        $ref: '#/definitions/workers'
+  k8s_cluster_config:
+    type: object
+    required:
+    - metadata
+    - name
+    - version
+    - masters_config
+    - etcd_config
+    - workers_config
+    - storage_class_config
+    - cni_config
+    properties:
+      cni_config:
+        $ref: '#/definitions/cni_config'
+      etcd_config:
+        $ref: '#/definitions/etcd_config'
+      masters_config:
+        $ref: '#/definitions/masters_config'
+      metadata:
+        $ref: '#/definitions/metadata'
+      name:
+        description: Unique name of the k8s cluster.
+        type: string
+        maxLength: 40
+        minLength: 1
+        pattern: '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+        example: prod-cluster
+      storage_class_config:
+        description: Default storage class configuration used for the creation of
+          volumes needed for stateful services deployed by Karbon.
+        $ref: '#/definitions/storage_class_config'
+      version:
+        description: K8s version of the cluster.
+        type: string
+        pattern: ^v?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        example: 1.16.8-1
+      workers_config:
+        $ref: '#/definitions/workers_config'
+  k8s_cluster_create_response:
+    type: object
+    required:
+    - task_uuid
+    - cluster_name
+    - cluster_uuid
+    properties:
+      cluster_name:
+        type: string
+      cluster_uuid:
+        type: string
+      task_uuid:
+        type: string
+  k8s_cluster_delete_response:
+    type: object
+    required:
+    - task_uuid
+    properties:
+      cluster_name:
+        description: Name of the k8s cluster being deleted.
+        type: string
+      cluster_uuid:
+        description: UUID of the k8s cluster being deleted.
+        type: string
+      task_uuid:
+        description: UUID of the task tracking the k8s cluster deletion.
+        type: string
+  k8s_cluster_list:
+    description: K8s cluster list response
+    type: array
+    items:
+      $ref: '#/definitions/k8s_cluster'
+  karbon_version_response:
+    type: object
+    properties:
+      build_date:
+        description: The built date for the binary of the current Karbon version (Karbon
+          controller).
+        type: string
+      git_commit:
+        description: Git commit ID for the commit used to build the karbon controller
+          in the acs-k8s repository.
+        type: string
+      version:
+        description: The current Karbon version.
+        type: string
+  master_node_config:
+    type: object
+    required:
+    - ipv4_address
+    - node_pool_name
+    properties:
+      ipv4_address:
+        description: The IPV4 address to assign to the master.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$
+      node_pool_name:
+        description: The name of the node pool in which this master IPV4 address will
+          be used.
+        type: string
+        minLength: 1
+  masters:
+    description: Configuration of master nodes.
+    type: object
+    required:
+    - deployment_type
+    - node_pools
+    properties:
+      deployment_type:
+        description: Deployment type of the master node(s).
+        type: string
+        example: multi-master-active-passive
+      node_pools:
+        description: Names of node pools used for master nodes.
+        type: array
+        items:
+          type: string
+  masters_config:
+    description: Configuration of master nodes. Exactly one of the single master configuration,
+      the active-passive configuration or the external lb configuration need to be
+      provided.
+    type: object
+    required:
+    - node_pools
+    properties:
+      active_passive_config:
+        $ref: '#/definitions/active_passive_config'
+      external_lb_config:
+        $ref: '#/definitions/external_lb_config'
+      node_pools:
+        description: Configuration of the node pools that the masters belong to.
+        type: array
+        items:
+          $ref: '#/definitions/node_pool_config'
+      single_master_config:
+        $ref: '#/definitions/single_master_config'
+  metadata:
+    type: object
+    required:
+    - api_version
+    properties:
+      api_version:
+        description: Karbon API version.
+        type: string
+        default: v1.0.0
+        pattern: ^v?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+  node_info:
+    type: object
+    properties:
+      hostname:
+        description: Node hostname.
+        type: string
+      ipv4_address:
+        description: IPv4 address of the node.
+        type: string
+        pattern: ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$
+  node_pool:
+    type: object
+    required:
+    - name
+    - node_os_version
+    - num_instances
+    properties:
+      ahv_config:
+        description: Configuration of the Prism managed AHV cluster.
+        $ref: '#/definitions/ahv_config'
+      name:
+        description: Unique name of the node pool.
+        type: string
+      node_os_version:
+        description: Version of the node OS image.
+        type: string
+      nodes:
+        description: Details of nodes that are part of the node pool.
+        type: array
+        items:
+          $ref: '#/definitions/node_info'
+      num_instances:
+        description: Number of nodes in the node pool.
+        type: integer
+  node_pool_config:
+    type: object
+    required:
+    - name
+    - node_os_version
+    - num_instances
+    properties:
+      ahv_config:
+        description: Configuration of the Prism managed AHV cluster.
+        $ref: '#/definitions/ahv_config'
+      name:
+        description: Unique name of the node pool.
+        type: string
+        maxLength: 40
+        minLength: 1
+        pattern: '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+        example: etcd-node-pool
+      node_os_version:
+        description: The version of the node OS image.
+        type: string
+      num_instances:
+        description: Number of nodes in the node pool.
+        type: integer
+  single_master_config:
+    description: Configuration of a single master node
+    type: object
+    example: {}
+  storage_auth_input:
+    type: object
+    required:
+    - prism_element_cluster_uuid
+    - username
+    - password
+    properties:
+      password:
+        description: Password of the user in Prism Element.
+        type: string
+        minLength: 1
+      prism_element_cluster_uuid:
+        description: UUID of the Prism Element cluster.
+        type: string
+        pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+      username:
+        description: Username of the user in Prism Element. API calls to provision
+          volumes are made using this user account.
+        type: string
+        minLength: 1
+  storage_auth_response:
+    type: object
+    required:
+    - task_uuid
+    properties:
+      task_uuid:
+        type: string
+  storage_class_config:
+    type: object
+    required:
+    - name
+    properties:
+      default_storage_class:
+        description: K8 uses the default storage class when the persistent volume
+          claim (PVC) create request does not specify a storage class to use for the
+          new persistent volume (PV).
+        type: boolean
+      name:
+        description: The name of the storage class.
+        type: string
+        minLength: 1
+      reclaim_policy:
+        description: Reclaim policy for persistent volumes provisioned using the specified
+          storage class.
+        type: string
+      volumes_config:
+        description: Nutanix volumes configuration.
+        $ref: '#/definitions/storage_class_volumes_config'
+  storage_class_volumes_config:
+    type: object
+    required:
+    - username
+    - password
+    - storage_container
+    properties:
+      file_system:
+        description: Karbon uses either the ext4 or xfs file-system on the volume
+          disk.
+        type: string
+      flash_mode:
+        type: boolean
+      password:
+        description: Password of the Prism Element user that the API calls use to
+          provision volumes.
+        type: string
+        minLength: 1
+      prism_element_cluster_uuid:
+        description: The universally unique identifier (UUID) of the Prism Element
+          cluster.
+        type: string
+        pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+      storage_container:
+        description: Name of the storage container the storage container uses to provision
+          volumes.
+        type: string
+        minLength: 1
+      username:
+        description: The username of the Prism Element user that the API calls use
+          to provision volumes.
+        type: string
+        minLength: 1
+  task:
+    type: object
+    properties:
+      creation_time:
+        description: UTC date and time in the ISO 8601 format of when the task was
+          created.
+        type: string
+        format: date-time
+        example: "2017-07-21T17:32:28.000Z"
+      error_detail:
+        description: Details of errors encountered in case of a failure.
+        type: string
+      message:
+        description: Task description.
+        type: string
+      operation_type:
+        description: Type of the operation tracked by the task.
+        type: string
+      percentage_complete:
+        description: Percentage progress of the task.
+        type: integer
+        maximum: 100
+        minimum: 0
+      progress_message:
+        description: Description of what the task is currently doing.
+        type: string
+      status:
+        description: The current state of the task.
+        type: string
+      uuid:
+        description: Task UUID.
+        type: string
+  workers:
+    description: Worker configuration information.
+    type: object
+    properties:
+      node_pools:
+        description: Names of the worker node pools.
+        type: array
+        items:
+          type: string
+  workers_config:
+    description: Configuration of the worker nodes.
+    type: object
+    required:
+    - node_pools
+    properties:
+      node_pools:
+        description: Configuration of the node pools that the workers belong to.
+        type: array
+        items:
+          $ref: '#/definitions/node_pool_config'
+securityDefinitions:
+  basicAuth:
+    type: basic
+tags:
+- name: Cluster
+- name: Meta
