@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: Karbon
   contact:
-    name: Karbon Developers Test
+    name: Karbon Developers Testingffff
 
     email: karbon-team@nutanix.com
   license:
@@ -21,7 +21,7 @@ paths:
         - application/json
       tags:
         - Cluster
-      summary: Updates the k8s secret and docker volume plugin password across k8s clusters deployed in Karbon.
+      summary: Updates the k8s secret and docker volume plugin password across k8s clusters deployed in Karbon API .
       operationId: PutK8sClusterStorageAuth
       parameters:
         - name: body
